@@ -69,7 +69,3 @@ y_pred_knn = knn_model.predict(X_test_classification)
 # Accuracy for KNN
 knn_accuracy = accuracy_score(y_test_classification, y_pred_knn)
 print(f'Accuracy (KNN): {knn_accuracy:.2f}')
-
-# Classification report for Logistic Regression
-print("\nClassification Report (Logistic Regression):")
-print(classification_report(y_test_classification, y_pred_logistic))
