@@ -6,28 +6,23 @@ from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, mean_squared_error, confusion_matrix, classification_report
 
-# Load the dataset
 data = pd.read_csv('user_behavior_dataset.csv')
+data.columns = ['UserID', 'DeviceModel', 'OS', 'AppUsage', 'ScreenOnTime', 'BatteryDrain','NumApps', 'DataUsage', 'Age', 'Gender', 'BehaviorClass']
 
-# Display the first 5 records
-print("First 5 records of the dataset:")
-print(data.head())
+print(data.columns)
 
-# Renaming columns for simplicity
-data.columns = ['UserID', 'DeviceModel', 'OS', 'AppUsage', 'ScreenOnTime', 'BatteryDrain',
-                'NumApps', 'DataUsage', 'Age', 'Gender', 'BehaviorClass']
-
-# Features (X) and Target (y) for classification
 X_class = data[['AppUsage', 'ScreenOnTime', 'BatteryDrain', 'NumApps', 'DataUsage']]
 y_class = data['BehaviorClass']
 
-# Splitting the data for classification (Logistic Regression and KNN)
 X_train_class, X_test_class, y_train_class, y_test_class = train_test_split(X_class, y_class, test_size=0.3, random_state=42)
 
 # --- LOGISTIC REGRESSION ---
 logistic_model = LogisticRegression(max_iter=1000)
 logistic_model.fit(X_train_class, y_train_class)
 y_pred_logistic = logistic_model.predict(X_test_class)
+
+accuracy_logistic = accuracy_score(y_test_class, y_pred_logistic)
+print(f"Accuracy for Logistic Regression: {accuracy_logistic:.2f}")
 
 # Plot 1: Confusion Matrix for Logistic Regression
 conf_matrix = confusion_matrix(y_test_class, y_pred_logistic)
@@ -44,13 +39,18 @@ knn_model = KNeighborsClassifier(n_neighbors=5)
 knn_model.fit(X_train_class, y_train_class)
 y_pred_knn = knn_model.predict(X_test_class)
 
+accuracy_knn_5 = accuracy_score(y_test_class, y_pred_knn)
+print(f"Accuracy for KNN with K=5: {accuracy_knn_5:.2f}")
+
 # Plot 2: Accuracy vs. Number of Neighbors (K)
 k_values = range(1, 21)
 knn_accuracies = []
 for k in k_values:
     knn_model = KNeighborsClassifier(n_neighbors=k)
     knn_model.fit(X_train_class, y_train_class)
-    knn_accuracies.append(knn_model.score(X_test_class, y_test_class))
+    acc = knn_model.score(X_test_class, y_test_class)
+    knn_accuracies.append(acc)
+    print(f"Accuracy for K={k}: {acc:.2f}")
 
 plt.figure(figsize=(8, 5))
 plt.plot(k_values, knn_accuracies, marker='o', linestyle='--', color='b')
@@ -61,22 +61,23 @@ plt.grid()
 plt.show()
 
 # --- LINEAR REGRESSION ---
-# Linear regression with AppUsage as the target and BatteryDrain as a feature
+
 X_reg = data[['BatteryDrain']]
 y_reg = data['AppUsage']
 
-# Splitting the data for regression
 X_train_reg, X_test_reg, y_train_reg, y_test_reg = train_test_split(X_reg, y_reg, test_size=0.3, random_state=42)
 
-# Fit the model
 linear_model = LinearRegression()
 linear_model.fit(X_train_reg, y_train_reg)
 
-# Predict
 y_pred_linear = linear_model.predict(X_test_reg)
 
-# Ensure shapes match for plotting
-y_test_reg = y_test_reg.reset_index(drop=True)  # Reset index of y_test_reg to align with y_pred_linear
+mse = mean_squared_error(y_test_reg, y_pred_linear)
+print(f"Mean Squared Error for Linear Regression: {mse:.2f}")
+rmse = np.sqrt(mse)
+print(f"Root Mean Squared Error (RMSE) for Linear Regression: {rmse:.2f}")
+
+y_test_reg = y_test_reg.reset_index(drop=True)  
 
 # Plot 3: Actual vs. Predicted Values (Linear Regression)
 plt.figure(figsize=(8, 5))
@@ -88,7 +89,7 @@ plt.grid()
 plt.show()
 
 # Plot 4: Residuals Histogram (Linear Regression)
-residuals = y_test_reg - y_pred_linear  # Residuals calculation
+residuals = y_test_reg - y_pred_linear 
 plt.figure(figsize=(8, 5))
 plt.hist(residuals, bins=20, color='purple', alpha=0.7)
 plt.title("Linear Regression - Residuals Histogram")
