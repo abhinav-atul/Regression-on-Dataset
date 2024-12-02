@@ -42,13 +42,13 @@ The dataset should be named `user_behavior_dataset.csv` and should be placed in 
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd <repository-name>
+   git clone https://github.com/abhinav-atul/Regression-on-Dataset
+   cd Regression-on-Dataset
    ```
 
 2. Run the script:
    ```bash
-   python <script_name>.py
+   python CSE_Ex7.py
    ```
 
 ## Outputs
